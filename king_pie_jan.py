@@ -3,16 +3,27 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 all_data = pd.read_csv('king_pie_all_jan.csv')
+vouchers = pd.read_csv('king_pie_vouchers_dec.csv')
 chip_v = pd.read_excel('King Pie Loyalty - Chip Vouchers.xlsx')
 coke_v = pd.read_excel('King Pie Loyalty - Coke Vouchers.xlsx')
 
 chip_v['Cell_Number'] = chip_v['Cell Number']
+chip_v['code'] = chip_v['Voucher']
 coke_v['Cell_Number'] = coke_v['Cell Number']
+coke_v['code'] = coke_v['Voucher']
+
+# Merge dataframes on voucher code
+chips_df = pd.merge(vouchers, chip_v, on='code', how='inner')
+chips_redeemed_df = chips_df[['Cell_Number']]
+coke_df = pd.merge(vouchers, coke_v, on='code', how='inner')
+coke_redeemed_df = coke_df[['Cell_Number']]
+
+
 
 # Merge dataframes on user_id
-chips_df = pd.merge(all_data, chip_v, on='Cell_Number', how='inner')
+chips_df = pd.merge(all_data, chips_redeemed_df, on='Cell_Number', how='inner')
 chips_customer_tracker_df = chips_df[['Cell_Number', 'item_description', 'item_description2', 'item_description3', 'item_description4', 'item_description5', 'item_description6']]
-coke_df = pd.merge(all_data, coke_v, on='Cell_Number', how='inner')
+coke_df = pd.merge(all_data, coke_redeemed_df, on='Cell_Number', how='inner')
 coke_customer_tracker_df = coke_df[['Cell_Number', 'item_description', 'item_description2', 'item_description3', 'item_description4', 'item_description5', 'item_description6']]
 
 # Counting occurrences of each user_id
@@ -23,13 +34,23 @@ all_coke_user_counts = coke_customer_tracker_df['Cell_Number'].value_counts()
 
 
 
-st.title('King Pie Analysis on the Chips and Coke Vouchers')
+st.title('King Pie Analysis on the Chips and Coke Vouchers For January')
 
-tab1, tab2 = st.tabs(["Chips", "Coke"])
+tab1, tab2 = st.tabs(["People who got Chips Vouchers", "People who got Coke Vouchers"])
+
 with tab1:
    # Visualize top 10 users' purchases from chips
     fig, ax = plt.subplots()
-    ax.bar(chips_user_counts.index.astype(str), chips_user_counts.values)
+    bars = ax.bar(chips_user_counts.index.astype(str), chips_user_counts.values)
+    # Add numbers on top of bars
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate('{}'.format(height),
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),  # 3 points vertical offset
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+
     ax.set_xlabel('User ID')
     ax.set_ylabel('Purchase Count')
     ax.set_title('Top 10 Users Purchases From Chips Voucher')
@@ -48,7 +69,14 @@ with tab1:
 with tab2:
    # Visualize top 10 users' purchases from coke
     fig, ax = plt.subplots()
-    ax.bar(coke_user_counts.index.astype(str), coke_user_counts.values)
+    bars = ax.bar(coke_user_counts.index.astype(str), coke_user_counts.values)
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate('{}'.format(height),
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),  # 3 points vertical offset
+                    textcoords="offset points",
+                    ha='center', va='bottom')
     ax.set_xlabel('User ID')
     ax.set_ylabel('Purchase Count')
     ax.set_title('Top 10 Users Purchases From Coke Voucher')
@@ -62,5 +90,3 @@ with tab2:
     # Display all users' purchases table
     st.subheader("All Users' Purchases(From Coke Voucher):")
     st.write(coke_customer_tracker_df[coke_customer_tracker_df['Cell_Number'].isin(all_coke_user_counts.index)].reset_index(drop=True))
-
-
