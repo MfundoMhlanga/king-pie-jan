@@ -32,13 +32,53 @@ all_chips_user_counts = chips_customer_tracker_df['Cell_Number'].value_counts()
 coke_user_counts = coke_customer_tracker_df['Cell_Number'].value_counts().head(10)
 all_coke_user_counts = coke_customer_tracker_df['Cell_Number'].value_counts()
 
+# Function to filter and count items
+def chips_count_items(df):
+    # Filter rows based on multiple conditions for each item column
+    filtered_df = chips_customer_tracker_df[((chips_customer_tracker_df['item_description'].str.contains('Meal')) & (chips_customer_tracker_df['item_description'] != 'Super Saver Meal Buddy')) |
+                 ((chips_customer_tracker_df['item_description2'].str.contains('Meal')) & (chips_customer_tracker_df['item_description2'] != 'Super Saver Meal Buddy')) |
+                 ((chips_customer_tracker_df['item_description3'].str.contains('Meal')) & (chips_customer_tracker_df['item_description3'] != 'Super Saver Meal Buddy')) |
+                 ((chips_customer_tracker_df['item_description4'].str.contains('Meal')) & (chips_customer_tracker_df['item_description4'] != 'Super Saver Meal Buddy')) |
+                 ((chips_customer_tracker_df['item_description5'].str.contains('Meal')) & (chips_customer_tracker_df['item_description5'] != 'Super Saver Meal Buddy')) |
+                 ((chips_customer_tracker_df['item_description6'].str.contains('Meal')) & (chips_customer_tracker_df['item_description6'] != 'Super Saver Meal Buddy')) |
+                 (chips_customer_tracker_df['item_description'] == 'Burger Pie + Chips') | (chips_customer_tracker_df['item_description2'] == 'Burger Pie + Chips') | (chips_customer_tracker_df['item_description3'] == 'Burger Pie + Chips') |
+                 (chips_customer_tracker_df['item_description4'] == 'Burger Pie + Chips') | (chips_customer_tracker_df['item_description5'] == 'Super Saver Meal Buddy') | (chips_customer_tracker_df['item_description6'] == 'Burger Pie + Chips')]
 
+    # Count total items
+    total_items = len(filtered_df)
+    
+    # Count breakfast
+    breakfast_count = chips_customer_tracker_df[chips_customer_tracker_df.apply(lambda row: 'Super Saver Meal Buddy' in row.values, axis=1)].shape[0]
+    
+    return total_items, breakfast_count
+def chips_count_items(df):
+    # Filter rows based on multiple conditions for each item column
+    coke_filtered_df = coke_customer_tracker_df[((coke_customer_tracker_df['item_description'].str.contains('Meal')) & (coke_customer_tracker_df['item_description'] != 'Super Saver Meal Buddy')) |
+                 ((coke_customer_tracker_df['item_description2'].str.contains('Meal')) & (coke_customer_tracker_df['item_description2'] != 'Super Saver Meal Buddy')) |
+                 ((coke_customer_tracker_df['item_description3'].str.contains('Meal')) & (coke_customer_tracker_df['item_description3'] != 'Super Saver Meal Buddy')) |
+                 ((coke_customer_tracker_df['item_description4'].str.contains('Meal')) & (coke_customer_tracker_df['item_description4'] != 'Super Saver Meal Buddy')) |
+                 ((coke_customer_tracker_df['item_description5'].str.contains('Meal')) & (coke_customer_tracker_df['item_description5'] != 'Super Saver Meal Buddy')) |
+                 ((coke_customer_tracker_df['item_description6'].str.contains('Meal')) & (coke_customer_tracker_df['item_description6'] != 'Super Saver Meal Buddy')) |
+                 (coke_customer_tracker_df['item_description'] == 'Burger Pie + Chips') | (coke_customer_tracker_df['item_description2'] == 'Burger Pie + Chips') | (coke_customer_tracker_df['item_description3'] == 'Burger Pie + Chips') |
+                 (coke_customer_tracker_df['item_description4'] == 'Burger Pie + Chips') | (coke_customer_tracker_df['item_description5'] == 'Super Saver Meal Buddy') | (coke_customer_tracker_df['item_description6'] == 'Burger Pie + Chips')]
+
+    # Count total items
+    total_coke_items = len(coke_filtered_df)
+    
+    # Count breakfast
+    coke_only_count = chips_customer_tracker_df[chips_customer_tracker_df.apply(lambda row: 'Super Saver Meal Buddy' in row.values, axis=1)].shape[0]
+    
+    return total_coke_items, coke_only_count
 
 st.title('King Pie Analysis on the Chips and Coke Vouchers For January')
 
 tab1, tab2 = st.tabs(["People who got Chips Vouchers", "People who got Coke Vouchers"])
 
 with tab1:
+   total_items, breakfast_count = count_items(df)
+
+   st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_items)
+   st.write("Count of Super Saver Meal Buddy: ", breakfast_count)
    # Visualize top 10 users' purchases from chips
     fig, ax = plt.subplots()
     bars = ax.bar(chips_user_counts.index.astype(str), chips_user_counts.values)
@@ -67,6 +107,10 @@ with tab1:
 
 
 with tab2:
+   total_coke_items, coke_only_count = count_items(df)
+
+   st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_coke_items)
+   st.write("Count of Super Saver Meal Buddy: ", coke_only_count)
    # Visualize top 10 users' purchases from coke
     fig, ax = plt.subplots()
     bars = ax.bar(coke_user_counts.index.astype(str), coke_user_counts.values)
