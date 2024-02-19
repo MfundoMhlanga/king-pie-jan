@@ -51,7 +51,7 @@ def chips_count_items(df):
     breakfast_count = chips_customer_tracker_df[chips_customer_tracker_df.apply(lambda row: 'Super Saver Meal Buddy' in row.values, axis=1)].shape[0]
     
     return total_items, breakfast_count
-def chips_count_items(df):
+def coke_count_items(df):
     # Filter rows based on multiple conditions for each item column
     coke_filtered_df = coke_customer_tracker_df[((coke_customer_tracker_df['item_description'].str.contains('Meal')) & (coke_customer_tracker_df['item_description'] != 'Super Saver Meal Buddy')) |
                  ((coke_customer_tracker_df['item_description2'].str.contains('Meal')) & (coke_customer_tracker_df['item_description2'] != 'Super Saver Meal Buddy')) |
@@ -75,7 +75,7 @@ st.title('King Pie Analysis on the Chips and Coke Vouchers For January')
 tab1, tab2 = st.tabs(["People who got Chips Vouchers", "People who got Coke Vouchers"])
 
 with tab1:
-    total_items, breakfast_count = count_items(df)
+    total_items, breakfast_count = chips_count_items(chips_customer_tracker_df)
     st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_items)
     st.write("Count of Super Saver Meal Buddy: ", breakfast_count)
     # Visualize top 10 users' purchases from chips
@@ -106,7 +106,7 @@ with tab1:
 
 
 with tab2:
-    total_coke_items, coke_only_count = count_items(df)
+    total_coke_items, coke_only_count = coke_count_items(coke_customer_tracker_df)
     st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_coke_items)
     st.write("Count of Super Saver Meal Buddy: ", coke_only_count)
     # Visualize top 10 users' purchases from coke
