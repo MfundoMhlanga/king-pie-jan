@@ -75,11 +75,10 @@ st.title('King Pie Analysis on the Chips and Coke Vouchers For January')
 tab1, tab2 = st.tabs(["People who got Chips Vouchers", "People who got Coke Vouchers"])
 
 with tab1:
-   total_items, breakfast_count = count_items(df)
-
-   st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_items)
-   st.write("Count of Super Saver Meal Buddy: ", breakfast_count)
-   # Visualize top 10 users' purchases from chips
+    total_items, breakfast_count = count_items(df)
+    st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_items)
+    st.write("Count of Super Saver Meal Buddy: ", breakfast_count)
+    # Visualize top 10 users' purchases from chips
     fig, ax = plt.subplots()
     bars = ax.bar(chips_user_counts.index.astype(str), chips_user_counts.values)
     # Add numbers on top of bars
@@ -107,11 +106,10 @@ with tab1:
 
 
 with tab2:
-   total_coke_items, coke_only_count = count_items(df)
-
-   st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_coke_items)
-   st.write("Count of Super Saver Meal Buddy: ", coke_only_count)
-   # Visualize top 10 users' purchases from coke
+    total_coke_items, coke_only_count = count_items(df)
+    st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_coke_items)
+    st.write("Count of Super Saver Meal Buddy: ", coke_only_count)
+    # Visualize top 10 users' purchases from coke
     fig, ax = plt.subplots()
     bars = ax.bar(coke_user_counts.index.astype(str), coke_user_counts.values)
     for bar in bars:
