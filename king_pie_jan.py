@@ -76,8 +76,8 @@ tab1, tab2 = st.tabs(["People who got Chips Vouchers", "People who got Coke Vouc
 
 with tab1:
     total_items, breakfast_count = chips_count_items(chips_customer_tracker_df)
-    st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_items)
-    st.write("Count of Super Saver Meal Buddy: ", breakfast_count)
+    st.write("Total count of Meal items (excluding 'Super Saver Meal Buddy'): ", total_items)
+    st.write("Total of Super Saver Meal Buddy: ", breakfast_count)
     # Visualize top 10 users' purchases from chips
     fig, ax = plt.subplots()
     bars = ax.bar(chips_user_counts.index.astype(str), chips_user_counts.values)
@@ -107,8 +107,8 @@ with tab1:
 
 with tab2:
     total_coke_items, coke_only_count = coke_count_items(coke_customer_tracker_df)
-    st.write("Total count of items (excluding 'Super Saver Meal Buddy'): ", total_coke_items)
-    st.write("Count of Super Saver Meal Buddy: ", coke_only_count)
+    st.write("Total of Meal items (excluding 'Super Saver Meal Buddy'): ", total_coke_items)
+    st.write("Total of Super Saver Meal Buddy: ", coke_only_count)
     # Visualize top 10 users' purchases from coke
     fig, ax = plt.subplots()
     bars = ax.bar(coke_user_counts.index.astype(str), coke_user_counts.values)
