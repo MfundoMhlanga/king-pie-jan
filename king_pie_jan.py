@@ -32,6 +32,9 @@ all_chips_user_counts = chips_customer_tracker_df['Cell_Number'].value_counts()
 coke_user_counts = coke_customer_tracker_df['Cell_Number'].value_counts().head(10)
 all_coke_user_counts = coke_customer_tracker_df['Cell_Number'].value_counts()
 
+#hips_customer_tracker_df['Cell_Number'] = chips_customer_tracker_df['Cell_Number'].astype(str)
+#coke_customer_tracker_df['Cell_Number'] = coke_customer_tracker_df['Cell_Number'].astype(str)
+
 # Function to filter and count items
 def chips_count_items(df):
     # Filter rows based on multiple conditions for each item column
@@ -48,9 +51,16 @@ def chips_count_items(df):
     total_items = len(filtered_df)
     
     # Count breakfast
-    breakfast_count = chips_customer_tracker_df[chips_customer_tracker_df.apply(lambda row: 'Super Saver Meal Buddy' in row.values, axis=1)].shape[0]
-    
-    return total_items, breakfast_count
+    #breakfast_count = chips_customer_tracker_df[chips_customer_tracker_df.apply(lambda row: 'Super Saver Meal Buddy' in row.values, axis=1)].shape[0]
+    # Count breakfast
+    chips_only_df = chips_customer_tracker_df[chips_customer_tracker_df.apply(lambda row: 'Super Saver Meal Buddy' in row.values, axis=1)]
+    chips_only_count = chips_only_df.shape[0]
+    #chips_only_count['Cell_Number'] = chips_only_count['Cell_Number'].astype(str)
+    chips_only_unique_persons = chips_only_df['Cell_Number'].unique()
+
+    return filtered_df['Cell_Number'].unique(), total_items, chips_only_count, chips_only_unique_persons
+
+    #return filtered_df['Cell_Number'].unique(), total_items, breakfast_count
 def coke_count_items(df):
     # Filter rows based on multiple conditions for each item column
     coke_filtered_df = coke_customer_tracker_df[((coke_customer_tracker_df['item_description'].str.contains('Meal')) & (coke_customer_tracker_df['item_description'] != 'Super Saver Meal Buddy')) |
@@ -66,18 +76,34 @@ def coke_count_items(df):
     total_coke_items = len(coke_filtered_df)
     
     # Count breakfast
-    coke_only_count = chips_customer_tracker_df[chips_customer_tracker_df.apply(lambda row: 'Super Saver Meal Buddy' in row.values, axis=1)].shape[0]
-    
-    return total_coke_items, coke_only_count
+    #coke_only_count = chips_customer_tracker_df[chips_customer_tracker_df.apply(lambda row: 'Super Saver Meal Buddy' in row.values, axis=1)].shape[0]
+    # Count breakfast
+    coke_only_df = coke_customer_tracker_df[coke_customer_tracker_df.apply(lambda row: 'Super Saver Meal Buddy' in row.values, axis=1)]
+    coke_only_count = coke_only_df.shape[0]
+    coke_only_unique_persons = coke_only_df['Cell_Number'].unique()
+    return coke_filtered_df['Cell_Number'].unique(), total_coke_items, coke_only_count, coke_only_unique_persons
 
 st.title('King Pie Analysis on the Chips and Coke Vouchers For January')
 
 tab1, tab2 = st.tabs(["People who got Chips Vouchers", "People who got Coke Vouchers"])
 
 with tab1:
-    total_items, breakfast_count = chips_count_items(chips_customer_tracker_df)
+    unique_persons, total_items, breakfast_count, breakfast_unique_persons = chips_count_items(chips_customer_tracker_df)
     st.write("Total count of Meal items (excluding 'Super Saver Meal Buddy'): ", total_items)
+    # Download button for unique persons
+    if st.button('Download Unique Persons(CHIPS)'):
+        unique_persons_df = pd.DataFrame(unique_persons, columns=['Unique Persons'])
+        csv = unique_persons_df.to_csv(index=False)
+        st.download_button(label="Download CSV", data=csv, file_name='unique_persons.csv', mime='text/csv')
+
     st.write("Total of Super Saver Meal Buddy: ", breakfast_count)
+
+    # Download button for unique persons associated with breakfast count
+    if st.button('Download Unique Persons (Super Saver Meal Buddy)(CHIPS)'):
+        breakfast_unique_persons_df = pd.DataFrame(breakfast_unique_persons, columns=['Unique Persons (Breakfast Count)'])
+        csv = breakfast_unique_persons_df.to_csv(index=False)
+        st.download_button(label="Download CSV", data=csv, file_name='super_saver_mealt_unique_persons.csv', mime='text/csv')
+
     # Visualize top 10 users' purchases from chips
     fig, ax = plt.subplots()
     bars = ax.bar(chips_user_counts.index.astype(str), chips_user_counts.values)
@@ -102,13 +128,30 @@ with tab1:
 
     # Display all users' purchases table
     st.subheader("All Users' Purchases(From Chips Voucher):")
-    st.write(chips_customer_tracker_df[chips_customer_tracker_df['Cell_Number'].isin(all_chips_user_counts.index)].reset_index(drop=True))
-
+    chips_all = chips_customer_tracker_df[chips_customer_tracker_df['Cell_Number'].isin(all_chips_user_counts.index)].reset_index(drop=True)
+    st.write(chips_all)
+    # Download button for top 10 users' purchases table
+    csv_data = chips_all.to_csv(index=False).encode()
+    st.download_button(label="Download All Chips Purchases CSV", data=csv_data, file_name='chips_all_data.csv', mime='text/csv')
+    
 
 with tab2:
-    total_coke_items, coke_only_count = coke_count_items(coke_customer_tracker_df)
-    st.write("Total of Meal items (excluding 'Super Saver Meal Buddy'): ", total_coke_items)
+    unique_persons_coke, total_coke_items, coke_only_count, coke_only_unique_persons = coke_count_items(coke_customer_tracker_df)
+    st.write("Total count of Meal items (excluding 'Super Saver Meal Buddy'): ", total_coke_items)
+    # Download button for unique persons
+    if st.button('Download Unique Persons(COKE)'):
+        unique_persons_coke_df = pd.DataFrame(unique_persons_coke, columns=['Unique Persons'])
+        csv = unique_persons_coke_df.to_csv(index=False)
+        st.download_button(label="Download CSV", data=csv, file_name='unique_persons.csv', mime='text/csv')
+
     st.write("Total of Super Saver Meal Buddy: ", coke_only_count)
+
+    # Download button for unique persons associated with breakfast count
+    if st.button('Download Unique Persons (Super Saver Meal Buddy)(COKE)'):
+        breakfast_unique_persons_df = pd.DataFrame(coke_only_unique_persons, columns=['Unique Persons (Breakfast Count)'])
+        csv = breakfast_unique_persons_df.to_csv(index=False)
+        st.download_button(label="Download CSV", data=csv, file_name='super_saver_mealt_unique_persons.csv', mime='text/csv')
+
     # Visualize top 10 users' purchases from coke
     fig, ax = plt.subplots()
     bars = ax.bar(coke_user_counts.index.astype(str), coke_user_counts.values)
@@ -131,4 +174,9 @@ with tab2:
 
     # Display all users' purchases table
     st.subheader("All Users' Purchases(From Coke Voucher):")
-    st.write(coke_customer_tracker_df[coke_customer_tracker_df['Cell_Number'].isin(all_coke_user_counts.index)].reset_index(drop=True))
+    coke_all = coke_customer_tracker_df[coke_customer_tracker_df['Cell_Number'].isin(all_coke_user_counts.index)].reset_index(drop=True)
+    st.write(coke_all)
+    # Download button for top 10 users' purchases table
+    csv_data = coke_all.to_csv(index=False).encode()
+    st.download_button(label="Download All Coke Purchases CSV", data=csv_data, file_name='coke_all_data.csv', mime='text/csv')
+    
