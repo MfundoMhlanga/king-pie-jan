@@ -83,7 +83,7 @@ def coke_count_items(df):
     coke_only_unique_persons = coke_only_df['Cell_Number'].unique()
     return coke_filtered_df['Cell_Number'].unique(), total_coke_items, coke_only_count, coke_only_unique_persons
 
-st.title('King Pie Analysis on the Chips and Coke Vouchers For January')
+st.title('King Pie Analysis on the Chips and Coke Vouchers For February')
 
 tab1, tab2 = st.tabs(["People who got Chips Vouchers", "People who got Coke Vouchers"])
 
