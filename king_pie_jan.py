@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-all_data = pd.read_csv('king_pie_all_jan.csv')
+all_data = pd.read_csv('king_pie_all_data_feb.csv')
 vouchers = pd.read_csv('king_pie_vouchers_dec.csv')
 chip_v = pd.read_excel('King Pie Loyalty - Chip Vouchers.xlsx')
 coke_v = pd.read_excel('King Pie Loyalty - Coke Vouchers.xlsx')
